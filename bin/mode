@@ -21,15 +21,12 @@ var program = new cli.Program([
 program.cmd.version = {
   main: function(){
     var self = this;
-    git.describe(exports.basedir, function(err, stdout, stderr) {
+    git.describe(function(err, stdout, stderr) {
       if (err) self.exit(err);
       self.exit('mode '+stdout.trim());
     });
   },
-  desc: 'Print version of mode and exit',
-  options: [
-    ['internet', 'Do stuff on the internets']
-  ]
+  desc: 'Print version of mode and exit'
 }
 
 program.cmd.update = {
