@@ -1,0 +1,28 @@
+#!/usr/bin/env node --
+var path = require('path')
+   ,fs = require('fs')
+   ,sys = require('sys')
+require.paths.unshift(path.join(path.dirname(__dirname), 'lib'));
+process.mixin(GLOBAL, require('printf'))
+var git = require('git')
+   ,cli = require('cli')
+
+var program = new cli.Program([
+  'Usage: nmod [global options] <command> [command options]',
+  '',
+  'Global options:',
+	['quiet',    'Suppress all messages except errors.'],
+	['verbose',  'Print details.']
+]);
+program.commands.version = function(){
+  sys.p(Array.prototype.slice.call(arguments))
+  var self = this;
+  git.describe(function(err, stdout, stderr) {
+    if (err) self.exit(err);
+    self.exit('nmod '+stdout);
+  });
+}
+program.commands.version.desc = 'Print version of nmod and exit';
+
+
+program.main()
