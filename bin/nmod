@@ -2,27 +2,45 @@
 var path = require('path')
    ,fs = require('fs')
    ,sys = require('sys')
-require.paths.unshift(path.join(path.dirname(__dirname), 'lib'));
-process.mixin(GLOBAL, require('printf'))
+exports.basedir = path.dirname(__dirname);
+require.paths.unshift(path.join(exports.basedir, 'lib'));
 var git = require('git')
    ,cli = require('cli')
 
+// set GIT_DIR to our basedir
+git.dir = exports.basedir;
+
 var program = new cli.Program([
-  'Usage: nmod [global options] <command> [command options]',
+  'Usage: mode [global options] <command> [command options]',
   '',
   'Global options:',
 	['quiet',    'Suppress all messages except errors.'],
 	['verbose',  'Print details.']
 ]);
-program.commands.version = function(){
-  sys.p(Array.prototype.slice.call(arguments))
-  var self = this;
-  git.describe(function(err, stdout, stderr) {
-    if (err) self.exit(err);
-    self.exit('nmod '+stdout);
-  });
+
+program.cmd.version = {
+  main: function(){
+    var self = this;
+    git.describe(exports.basedir, function(err, stdout, stderr) {
+      if (err) self.exit(err);
+      self.exit('mode '+stdout.trim());
+    });
+  },
+  desc: 'Print version of mode and exit',
+  options: [
+    ['internet', 'Do stuff on the internets']
+  ]
 }
-program.commands.version.desc = 'Print version of nmod and exit';
+
+program.cmd.update = {
+  main: function() {
+    git.exec("pull origin master", function(err, stdout, stderr) {
+      if (err) self.exit(err);
+      self.exit(stdout.trim());
+    });
+  },
+  desc: 'Update the module index.'
+}
 
 
 program.main()
