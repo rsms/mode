@@ -27,13 +27,14 @@ program.cmd.version = {
 
 program.cmd.update = {
   main: function() {
-    git.exec("pull origin master", function(err, stdout, stderr) {
+    git.exec("pull origin master", true, function(err, stdout, stderr) {
       if (err) this.exit(err);
-      this.exit(stdout.trim());
     });
   },
   desc: 'Update the module index.'
 }
+
+program.cmd.search = require('./mode-search');
 
 program.main(function(){
   // set GIT_DIR to our basedir
