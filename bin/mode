@@ -7,9 +7,6 @@ require.paths.unshift(path.join(exports.basedir, 'lib'));
 var git = require('git')
    ,cli = require('cli')
 
-// set GIT_DIR to our basedir
-git.dir = exports.basedir;
-
 var program = new cli.Program([
   'Usage: mode [global options] <command> [command options]',
   'Global options:',
@@ -20,10 +17,9 @@ var program = new cli.Program([
 
 program.cmd.version = {
   main: function(){
-    var self = this;
     git.describe(function(err, stdout, stderr) {
-      if (err) self.exit(err);
-      self.exit('mode '+stdout.trim());
+      if (err) this.exit(err);
+      this.exit('mode '+stdout.trim());
     });
   },
   desc: 'Print version of mode and exit'
@@ -32,11 +28,15 @@ program.cmd.version = {
 program.cmd.update = {
   main: function() {
     git.exec("pull origin master", function(err, stdout, stderr) {
-      if (err) self.exit(err);
-      self.exit(stdout.trim());
+      if (err) this.exit(err);
+      this.exit(stdout.trim());
     });
   },
   desc: 'Update the module index.'
 }
 
-program.main()
+program.main(function(){
+  // set GIT_DIR to our basedir
+  git.dir = exports.basedir;
+  git.context = this; // execute git callbacks in the program
+})
