@@ -12,10 +12,10 @@ git.dir = exports.basedir;
 
 var program = new cli.Program([
   'Usage: mode [global options] <command> [command options]',
-  '',
   'Global options:',
 	['quiet',    'Suppress all messages except errors.'],
-	['verbose',  'Print details.']
+	['verbose',  'Print details.'],
+	['help',  'Show this help message.'],
 ]);
 
 program.cmd.version = {
@@ -38,6 +38,5 @@ program.cmd.update = {
   },
   desc: 'Update the module index.'
 }
-
 
 program.main()
