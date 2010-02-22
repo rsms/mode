@@ -17,7 +17,13 @@ function moduleInstaller(self, module, options) {
       self.log('  Building '+this);
     }).addListener('will-activate', function(){
       self.log('  Activating '+this);
-    })
+    });
+    
+    if (options.verbose) {
+      module.addListener('did-configure', function(){
+        self.log('  => '+options.installFiles);
+      })
+    }
   }
   
   return function(closure){
@@ -51,8 +57,31 @@ exports.desc = 'Install modules.';
 exports.options = [
   'Usage: .. install [options] <module> ..',
   'Options:',
-  ['case-sensitive', 'Make query case-sensitive. Default for --regexp query without the "i" flag when --regexp.'],
-  ['force', 'Force fetching and building even when not neccessary.'],
+
+  ['force',       'Force fetching and building even when not neccessary.'],
+
+  ['repoURI',     'Override the repository defined by the index. Warning: '+
+                  'this might give you unexpected results.',
+                  {type: 'string', short: 'u', long: 'repo-uri'}],
+
+  ['repoBranch',  'Fetch a specific branch, other than the recommended '+
+                  'default, from the module repository. Only applies to '+
+                  'modules managed by revision control systems like git.',
+                  {type: 'string', short: 'b', long: 'repo-branch'}],
+
+  ['repoRevision','Checkout and use a specific revision (or any refspec for '+
+                  'git repositories). Might need to be used in combination '+
+                  'with --repo-branch depending on repository type and '+
+                  'configuration.',
+                  {type: 'string', short: 'r', long: 'repo-rev'}],
+
+  ['checkoutDir', 'Override checkout (cache) location.',
+                  {type: 'string', short: 'p', long: 'checkout-path'}],
+
+  ['case-sensitive',
+                  'Make query case-sensitive. Default for --regexp query '+
+                  'without the "i" flag when --regexp.',
+                  {short: 'c'}],
 ]
 exports.main = function(args, options) {
   var self = this;
