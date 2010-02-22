@@ -1,11 +1,15 @@
 #!/usr/bin/env node --
-var path = require('path')
-   ,fs = require('fs')
-   ,sys = require('sys')
-exports.basedir = path.dirname(__dirname);
-require.paths.unshift(path.join(exports.basedir, 'lib'));
-var git = require('git')
-   ,cli = require('cli')
+var path = require('path'),
+    fs = require('fs'),
+    sys = require('sys');
+require.paths.unshift(path.join(__dirname, '../lib'));
+var git = require('git'),
+    cli = require('cli'),
+    mode = require('mode');
+
+require('fs-additions')
+
+mode.baseDir = path.dirname(__dirname);
 
 var program = new cli.Program([
   'Usage: mode [global options] <command> [command options]',
@@ -27,7 +31,7 @@ program.cmd.version = {
 
 program.cmd.update = {
   main: function() {
-    git.exec("pull origin master", true, function(err, stdout, stderr) {
+    git.exec("pull origin master", {buffered:false}, function(err, o, e) {
       if (err) this.exit(err);
     });
   },
@@ -35,9 +39,9 @@ program.cmd.update = {
 }
 
 program.cmd.search = require('./mode-search');
+program.cmd.install = require('./mode-install');
 
 program.main(function(){
   // set GIT_DIR to our basedir
-  git.dir = exports.basedir;
   git.context = this; // execute git callbacks in the program
 })
