@@ -67,7 +67,7 @@ exports.main = function(args, options) {
     regsrc.push('(?:^|\\/)'+name.replace(/([^a-zA-Z0-9_-])/,'\\$1')+'\.js$');
   }
   try {
-    query = new RegExp(regsrc.join('|'), 'i');
+    query = new RegExp(regsrc.join('|'), options.case_sensitive ? '':'i');
     //sys.error(query)
   }
   catch(e) {
