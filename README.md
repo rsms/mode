@@ -11,6 +11,28 @@ Mode aims to provide three things:
 If you are a developer of a node module, you might be interested in reading the [Mode maintainers' guide](http://github.com/rsms/mode/blob/master/doc/maintainers-guide.md).
 
 
+## Example use
+
+This example assumes you have cloned mode and added the `bin` directory to your `PATH`.
+
+    $ mode search crypto
+    math/crypto — OpenSSL based Hashing, Signing and Verifying.
+    $ mode --verbose search crypto
+    math/crypto
+      Website:     http://github.com/waveto/node-crypto
+      Description: OpenSSL based Hashing, Signing and Verifying.
+    $ mode install crypto
+    Installing math/crypto
+      Fetching math/crypto from git://github.com/waveto/node-crypto.git
+      Configuring math/crypto
+      Building math/crypto
+      Activating math/crypto
+    Installed math/crypto
+    $ mode update
+    Already up-to-date.
+    $
+    
+
 ## MIT license
 
 Copyright (c) 2010 Rasmus Andersson
