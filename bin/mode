@@ -31,7 +31,9 @@ program.cmd.version = {
 
 program.cmd.update = {
   main: function() {
-    git.exec("pull origin master", {buffered:false}, function(err, o, e) {
+    var args = ['pull', 'origin', 'master'];
+    if (!this.options.verbose) args.push('--quiet');
+    git.exec(args, {buffered:false}, function(err, o, e) {
       if (err) this.exit(err);
     });
   },
