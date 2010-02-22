@@ -15,8 +15,8 @@ function moduleInstaller(self, module, options) {
       self.log('  Configuring '+this);
     }).addListener('will-build', function(){
       self.log('  Building '+this);
-    }).addListener('will-install', function(){
-      self.log('  Installing '+this);
+    }).addListener('will-activate', function(){
+      self.log('  Activating '+this);
     })
   }
   
