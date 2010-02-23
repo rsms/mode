@@ -56,16 +56,18 @@ Most modules does not require any manual configuration. If you do not specify an
 
 #### Custom configuration
 
-Normally you only need to configure (or specify) the "product(s)"; the files or directories which will house your module.
+Normally you only need to configure (or specify) the "product" -- the file or directory which will house your module.
 
-Let's revisit our dear `example/bar` control file with the addition of "products":
+Let's revisit our dear `example/bar` control file with the addition of "product":
 
     // example/bar.js
     info.description = "An example module";
     info.github = "foo/bar";
-    info.products = ["lib/bar.js", "lib/bar/util.js"];
+    info.product = "lib/bar.js";
 
-This tells mode that only the two files `lib/bar.js` and `lib/bar/util.js` should be activated (symlinked into your library directory). Paths are relative to the module source root.
+This tells mode that `lib/bar.js` should be activated (symlinked into your library directory). Paths are relative to the module source root.
+
+> The name of the symlink will always be named after your module (e.g. "foo" in our example) no matter what the file is called in the repo.
 
 #### Advanced configuration
 
@@ -92,10 +94,8 @@ During the *configuration* step a module control script can execute custom code 
 
 When a module is installed or updated (i.e. `mode install bar`) the following steps are taken in order:
 
-1. **load** -- The module *control file* is loaded and executed. This step 
+1. [**load**] -- The module *control file* is loaded and executed. This step 
    is not visible to the user.
-
-2. **clear** -- If `--force` was given the cache is cleared, if applicable.
 
 3. **fetch** -- The module source is either cloned/downloaded or pulled/patched.
 
@@ -107,3 +107,13 @@ When a module is installed or updated (i.e. `mode install bar`) the following st
    within the local library directory).
 
 If an error occurs, the process is aborted and the user is presented with a description of the error.
+
+## Uninstallation steps
+
+When a module is uninstalled (i.e. `mode uninstall bar`) the following steps are taken in order:
+
+1. **deactivate** -- The module symlink is removed from the `active` directory.
+
+2. **clear** -- The installed module is removed from the `active` directory, (effectively removing everything added by mode).
+
+As a side note, the `deactivate` command performs the same task, except from purging the actual checkout (the module will be left in the `installed` directory and can later be activated using the `activate` command).
