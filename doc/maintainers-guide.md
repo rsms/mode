@@ -35,14 +35,14 @@ A *control file* is exposed to a set of script-local symbols:
 
 Mode takes a slightly different approach to versioning than most other package or module manager. Multiple versions of a module can be installed in parallel but more importantly, there is a notion of "latest version" ("master" branch in git-based repos). By default (if no explicit version is specified) a module is installed and keep up to date for it's "master" version. This means that ***control files* does not need to be changed for updates to propagate**. It's up to the user (and other modules dependencies) to choose one or more explicit versions.
 
-However, a control file can specify a custom repository branch from which to fetch source and updates. This gives you as a module maintainer great flexibility as you can setup a "stable" or parhaps "mode" branch in which you keep your quality-assured and tested module while keeping daily development in the master branch.
+However, a control file can specify a custom repository branch from which to fetch source and updates. This gives you as a module maintainer great flexibility as you can setup a "stable" branch in which you keep your quality-assured and tested module while keeping daily development in the master branch.
 
 Revisiting our `example/bar` control file:
 
     // example/bar.js
     info.description = "An example module";
     info.github = "foo/bar";
-    info.repoBranch = "mode";
+    info.repoBranch = "stable";
 
 In this example, mode will keep users' default installations of your module in sync with the "mode" branch of your repo.
 

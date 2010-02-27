@@ -15,8 +15,11 @@ function moduleInstaller(self, module, options) {
       self.log('  Configuring '+this);
     }).addListener('will-build', function(){
       self.log('  Building '+this);
-    }).addListener('will-activate', function(){
-      self.log('  Activating '+this);
+    }).addListener('will-activate', function(wasAlreadyActive){
+      if (wasAlreadyActive)
+        self.log('  Keeping already active '+this);
+      else
+        self.log('  Activating '+this);
     });
     
     if (options.verbose) {
@@ -75,8 +78,10 @@ exports.options = [
                   'configuration.',
                   {type: 'string', short: 'r', long: 'repo-rev'}],
 
-  ['checkoutDir', 'Override checkout (cache) location.',
-                  {type: 'string', short: 'p', long: 'checkout-path'}],
+  ['installDir',  'Override installation location (Note: this is not the '+
+                  '"active" location, but where a module version is '+
+                  '"unpacked").',
+                  {type: 'string', short: 'i', long: 'install-path'}],
 
   ['case-sensitive',
                   'Make query case-sensitive. Default for --regexp query '+
@@ -84,36 +89,16 @@ exports.options = [
                   {short: 'c'}],
 ]
 exports.main = function(args, options) {
-  var self = this;
-  if (args.length === 0) {
-    require('trollop').p.educate('Error: missing module name');
-    process.exit(1);
-  }
-  // module regexp
-  var regsrc = [];
-  for (var i=0;i<args.length;i++) {
-    var name = args[i];
-    regsrc.push('(?:^|\\/)'+name.replace(/([^a-zA-Z0-9_-])/,'\\$1')+'\.js$');
-  }
-  try {
-    query = new RegExp(regsrc.join('|'), options.case_sensitive ? '':'i');
-    //sys.error(query)
-  }
-  catch(e) {
-    this.exit(1, 'Error: malformed module name(s) '+
-                 args.map(sys.inspect).join(', '));
-    return;
-  }
-  // queue
-  var installQueue = new CallQueue(this, function(err){
-    if (err) self.exit(err);
-  });
+  var self = this,
+      query = this.mkModuleQuery(args),
+      queue = new CallQueue(this, function(err){ if (err) self.exit(err); });
+
   mode.Module.find(query, options, function(err, modules){
     if (err) self.exit(err);
     //sys.p(modules.map(function(x){return x.id}))
     // todo: resolve module dependencies and queue in order
     modules.forEach(function(module){
-      installQueue.push(moduleInstaller(self, module, options));
+      queue.push(moduleInstaller(self, module, options));
     });
   });
 }

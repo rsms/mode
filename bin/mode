@@ -19,6 +19,33 @@ var program = new cli.Program([
 	['help',  'Show this help message.'],
 ]);
 
+// helpers
+program.mkModuleQuery = function (names, options, moduleIsOptional) {
+  if (names.length === 0) {
+    if (moduleIsOptional)
+      return;
+    require('trollop').p.educate('Error: missing module name');
+    process.exit(1);
+    return;
+  }
+  // module regexp
+  var regsrc = [], query;
+  for (var i=0;i<names.length;i++) {
+    var name = names[i];
+    regsrc.push('(?:^|\\/)'+name.replace(/([^a-zA-Z0-9_-])/,'\\$1')+'\.js$');
+  }
+  try {
+    query = new RegExp(regsrc.join('|'), 
+      (options && options.case_sensitive) ? '':'i');
+    //sys.error(query)
+  }
+  catch(e) {
+    this.exit(1, 'Error: malformed module name(s) '+
+                 names.map(sys.inspect).join(', '));
+  }
+  return query;
+}
+
 program.cmd.version = {
   main: function(){
     git.describe(function(err, stdout, stderr) {
@@ -42,6 +69,7 @@ program.cmd.update = {
 
 program.cmd.search = require('./mode-search');
 program.cmd.install = require('./mode-install');
+program.cmd.activate = require('./mode-activate');
 
 program.main(function(){
   // set GIT_DIR to our basedir
