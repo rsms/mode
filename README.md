@@ -31,7 +31,18 @@ This example assumes you have cloned mode and added the `bin` directory to your 
     $ mode update
     Already up-to-date.
     $
-    
+
+## Installing
+
+Mode is installed by cloning this repository and can be placed wherever you want.
+
+    $ git clone git://github.com/rsms/mode.git
+
+Mode will put all activated modules in the "active" subdirectory. If you installed mode in your home directory, active modules will be found in `~/mode/active`. To make node find modules installed and activated by mode, you need to tell node about this path. There are many ways of doing so, but the recommended way is by using `~/.node_libraries`:
+
+    $ ln -s mode/active .node_libraries
+
+Now node will find all modules you install and activate using mode. You can of course still put other modules, not managed by mode, into your .node_libraries directory.
 
 ## MIT license
 
