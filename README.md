@@ -17,10 +17,6 @@ This example assumes you have cloned mode and added the `bin` directory to your 
 
     $ mode search crypto
     math/crypto — OpenSSL based Hashing, Signing and Verifying.
-    $ mode --verbose search crypto
-    math/crypto
-      Website:     http://github.com/waveto/node-crypto
-      Description: OpenSSL based Hashing, Signing and Verifying.
     $ mode install crypto
     Installing crypto@master
       Fetching crypto@master from git://github.com/waveto/node-crypto.git
