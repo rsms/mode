@@ -22,12 +22,12 @@ This example assumes you have cloned mode and added the `bin` directory to your 
       Website:     http://github.com/waveto/node-crypto
       Description: OpenSSL based Hashing, Signing and Verifying.
     $ mode install crypto
-    Installing math/crypto
-      Fetching math/crypto from git://github.com/waveto/node-crypto.git
-      Configuring math/crypto
-      Building math/crypto
-      Activating math/crypto
-    Installed math/crypto
+    Installing crypto@master
+      Fetching crypto@master from git://github.com/waveto/node-crypto.git
+      Configuring crypto@master
+      Building crypto@master
+      Activating crypto@master
+    Installed crypto@master
     $ mode update
     Already up-to-date.
     $
