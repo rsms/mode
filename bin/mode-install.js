@@ -43,9 +43,11 @@ function moduleInstaller(self, module, options) {
       if (cli.isColorTerminal) msg = '\033[1;33m'+msg+'\033[0;0m';
       self.log(msg);
     }
-    module.install(options, function(err){
+    module.install(options, function(err, lastesAlreadyInstalled){
       if (!err && !options.quiet) {
         var msg = 'Installed '+module;
+        if (lastesAlreadyInstalled)
+          msg = 'Latest version of '+module+' is already installed';
         if (cli.isColorTerminal) msg = '\033[1;32m'+msg+'\033[0;0m';
         self.log(msg);
       }
