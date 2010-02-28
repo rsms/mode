@@ -8,12 +8,12 @@ exports.desc = 'Activate modules.';
 exports.options = [
   'Usage: .. activate [options] <module> ..',
   'Options:',
-
+  ['force',       'Activate new module versions even if another version of '+
+                  'the module is active.'],
   ['installDir',  'Override installation location (Note: this is not the '+
                   '"active" location, but where a module version is '+
                   '"unpacked").',
                   {type: 'string', short: 'i', long: 'install-path'}],
-
   ['case-sensitive',
                   'Make query case-sensitive. Default for --regexp query '+
                   'without the "i" flag when --regexp.',
