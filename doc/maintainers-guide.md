@@ -44,7 +44,7 @@ Revisiting our `example/bar` control file:
     info.github = "foo/bar";
     info.repoRef = "stable";
 
-In this example, mode will keep users' default installations of your module in sync with the "mode" branch of your repo.
+In this example, mode will keep users' default installations of your module in sync with the "stable" branch of your repo.
 
 > Note that a user can override this using the `--repo-ref` flag or `@ref` suffix to `mode install`.
 
@@ -89,6 +89,12 @@ During the *configuration* step a module control script can execute custom code 
     }
 
 > Note: Configure code should avoid using synchronous (blocking) function calls. When the job is completed, call `jobdone`.
+
+
+### Building
+
+Currently mode supports configuring and building `node-waf`-based native code modules. If a `wscript` file is found in the root of the module source, or if the `info.wscript` property is set, the configure and build steps will invoke `node-waf configure` and `node-waf build`, respectively.
+
 
 ## Installation steps
 
