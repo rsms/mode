@@ -40,6 +40,12 @@ Mode will put all activated modules in the "active" subdirectory. If you install
 
 Now node will find all modules you install and activate using mode. You can of course still put other modules, not managed by mode, into your .node_libraries directory.
 
+Also, add the `mode` program to your `PATH`. One way of doing so would be:
+
+    $ ln -s mode/bin/mode ~/bin/mode
+
+Assuming `~/bin` is a directory and already in `PATH`.
+
 ## MIT license
 
 Copyright (c) 2010 Rasmus Andersson
