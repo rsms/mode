@@ -19,10 +19,11 @@ function moduleInstaller(self, module, options) {
           'installDir:  '+this.installDir,
           'activePath:  '+this.activePath,
           'productPath: '+this.productPath,
+          'productLink: '+this.productLink,
           'repoRef:     '+this.repoRef,
         ];
         if (this.wscript)
-          lines.push('wscript:    '+this.wscript);
+          lines.push('wscript:     '+this.wscript);
         self.log(lines.join('\n  '));
       }
       else {
