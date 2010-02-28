@@ -16,9 +16,10 @@ function moduleInstaller(self, module, options) {
       if (options.verbose) {
         var lines = [
           prefix+'Configuring '+this,
-          'installDir: '+this.installDir,
-          'activePath: '+this.activePath,
-          'repoRef:    '+this.repoRef,
+          'installDir:  '+this.installDir,
+          'activePath:  '+this.activePath,
+          'productPath: '+this.productPath,
+          'repoRef:     '+this.repoRef,
         ];
         if (this.wscript)
           lines.push('wscript:    '+this.wscript);
