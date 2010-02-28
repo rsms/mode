@@ -1,6 +1,4 @@
 var sys = require('sys'),
-    mode = require('mode'),
-    CallQueue = require('queue').CallQueue,
     cli = require('cli');
 
 function moduleInstaller(self, module, options) {
@@ -40,22 +38,15 @@ function moduleInstaller(self, module, options) {
   }
   
   return function(closure){
-    if (!self.options.quiet) {
-      if (cli.isColorTerminal) {
-        var R = '\033[0;0m';
-        self.log('\033[1;33m'+'Installing '+module+R);
-      }
-      else {
-        self.log('Installing '+module);
-      }
+    if (!options.quiet) {
+      var msg = 'Installing '+module;
+      if (cli.isColorTerminal) msg = '\033[1;33m'+msg+'\033[0;0m';
+      self.log(msg);
     }
-    var opt = {};
-    process.mixin(opt, self.options, options);
-    module.install(opt, function(err){
-      if (!err && !opt.quiet) {
+    module.install(options, function(err){
+      if (!err && !options.quiet) {
         var msg = 'Installed '+module;
-        if (cli.isColorTerminal)
-          msg = '\033[1;32m'+msg+'\033[0;0m';
+        if (cli.isColorTerminal) msg = '\033[1;32m'+msg+'\033[0;0m';
         self.log(msg);
       }
       if (err && 
@@ -100,20 +91,5 @@ exports.options = [
                   {short: 'c'}],
 ]
 exports.main = function(args, options) {
-  var self = this,
-      moduleOptions = {},
-      query = this.mkModuleQuery(args, options, moduleOptions),
-      queue = new CallQueue(this, function(err){ if (err) self.exit(err); });
-
-  mode.Module.find(query, options, function(err, modules){
-    if (err) self.exit(err);
-    //sys.p(modules.map(function(x){return x.id}))
-    // todo: resolve module dependencies and queue in order
-    modules.forEach(function(module){
-      var opts = {};
-      process.mixin(opts, self.options, options, 
-        moduleOptions[module.shortId.toLowerCase()]);
-      queue.push(moduleInstaller(self, module, opts));
-    });
-  });
+  this.forEachModule(args, options, moduleInstaller);
 }

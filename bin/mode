@@ -5,7 +5,8 @@ var path = require('path'),
 require.paths.unshift(path.join(__dirname, '../lib'));
 var git = require('git'),
     cli = require('cli'),
-    mode = require('mode');
+    mode = require('mode'),
+    CallQueue = require('../lib/queue').CallQueue;
 
 require('fs-additions')
 
@@ -35,7 +36,9 @@ program.addListener('options', function(){
   }
 });
 
-// helpers
+// ----------------------------------------------------------------------------
+// Helpers
+
 program.mkModuleQuery = function (names, options, moduleOptions,
                                   moduleIsOptional)
 {
@@ -71,6 +74,29 @@ program.mkModuleQuery = function (names, options, moduleOptions,
   return query;
 }
 
+program.forEachModule = function(args, options, jobFactory) {
+  var self = this,
+      moduleOptions = {},
+      query = this.mkModuleQuery(args, options, moduleOptions),
+      queue = new CallQueue(this, function(err){ if (err) self.exit(err); });
+  mode.Module.find(query, options, function(err, modules){
+    if (!err && options.installDir && modules.length > 1)
+      err = new Error('--install-path can not be used for multiple modules');
+    if (err) return self.exit(err);
+    //sys.p(modules.map(function(x){return x.id}))
+    // todo: resolve module dependencies and queue in order
+    modules.forEach(function(module){
+      var opts = {};
+      process.mixin(opts, self.options, options, 
+        moduleOptions[module.shortId.toLowerCase()]);
+      queue.push(jobFactory(self, module, opts));
+    });
+  });
+}
+
+// ----------------------------------------------------------------------------
+// Subcommands
+
 program.cmd.version = {
   main: function(){
     git.describe(function(err, stdout, stderr) {
@@ -94,7 +120,9 @@ program.cmd.update = {
 
 program.cmd.search = require('./mode-search');
 program.cmd.install = require('./mode-install');
+program.cmd.uninstall = require('./mode-uninstall');
 program.cmd.activate = require('./mode-activate');
+program.cmd.deactivate = require('./mode-deactivate');
 
 
 program.main(function(){
