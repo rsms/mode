@@ -35,24 +35,23 @@ A *control file* is exposed to a set of script-local symbols:
 
 Mode takes a slightly different approach to versioning than most other package or module manager. Multiple versions of a module can be installed in parallel but more importantly, there is a notion of "latest version" ("master" branch in git-based repos). By default (if no explicit version is specified) a module is installed and keep up to date for it's "master" version. This means that ***control files* does not need to be changed for updates to propagate**. It's up to the user (and other modules dependencies) to choose one or more explicit versions.
 
-However, a control file can specify a custom repository branch from which to fetch source and updates. This gives you as a module maintainer great flexibility as you can setup a "stable" branch in which you keep your quality-assured and tested module while keeping daily development in the master branch.
+However, a control file can specify a custom repository ref from which to sync source and updates. This gives you as a module maintainer great flexibility as you can setup a "stable" branch in which you keep your quality-assured and tested module while keeping daily development in the master branch.
 
 Revisiting our `example/bar` control file:
 
     // example/bar.js
     info.description = "An example module";
     info.github = "foo/bar";
-    info.repoBranch = "stable";
+    info.repoRef = "stable";
 
 In this example, mode will keep users' default installations of your module in sync with the "mode" branch of your repo.
 
-> Note that a user can override this using the `--repo-branch` and `--revision` 
-  flag to `mode install`.
+> Note that a user can override this using the `--repo-ref` flag or `@ref` suffix to `mode install`.
 
 
 ### Configuration
 
-Most modules does not require any manual configuration. If you do not specify any "products", your module directory will be treated as the actual module. That is, if your module is called `example/bar` and checked out to `/cache/example/bar`, will be symbolically linked to `/library/bar` (simplified -- in reality its namespaced with version(s)).
+Most modules do not require manual configuration. If you do _not_ specify a "product", your module directory will be treated as the actual module. That is, if your module is called `example/bar` and checked out to `/cache/example/bar`, will be symbolically linked to `/library/bar` (simplified -- in reality its namespaced with ref(s)).
 
 #### Custom configuration
 
@@ -89,6 +88,7 @@ During the *configuration* step a module control script can execute custom code 
       });
     }
 
+> Note: Configure code should avoid using synchronous (blocking) function calls. When the job is completed, call `jobdone`.
 
 ## Installation steps
 
