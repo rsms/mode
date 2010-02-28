@@ -49,7 +49,8 @@ exports.options = [
 ]
 exports.main = function(args, options) {
   var self = this,
-      query = this.mkModuleQuery(args),
+      moduleOptions = {},
+      query = this.mkModuleQuery(args, options, moduleOptions),
       queue = new CallQueue(this, function(err){ if (err) self.exit(err); });
   
   mode.Module.find(query, options, function(err, modules){
@@ -57,7 +58,10 @@ exports.main = function(args, options) {
     //sys.p(modules.map(function(x){return x.id}))
     // todo: resolve module dependencies and queue in order
     modules.forEach(function(module){
-      queue.push(moduleActivator(self, module, options));
+      var opts = {};
+      process.mixin(opts, self.options, options, 
+        moduleOptions[module.shortId.toLowerCase()]);
+      queue.push(moduleActivator(self, module, opts));
     });
   });
 }

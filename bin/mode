@@ -16,11 +16,29 @@ var program = new cli.Program([
   'Global options:',
 	['quiet',    'Suppress all messages except errors.'],
 	['verbose',  'Print details.'],
+	['debug',  'Print too much details.'],
 	['help',  'Show this help message.'],
 ]);
 
+program.addListener('options', function(){
+  // activate debug mode?
+  if (this.options.debug) {
+    var prefix = 'DEBUG: ';
+    if (cli.isColorTerminal)
+      prefix = '\033[1;35m'+prefix+'\033[0;0m';
+    sys.debug = function(){
+      process.stdio.writeError(prefix+
+        Array.prototype.slice.apply(arguments).join(' ') + "\n");
+    }
+    this.options.verbose = true;
+    require('sh').debug = true;
+  }
+});
+
 // helpers
-program.mkModuleQuery = function (names, options, moduleIsOptional) {
+program.mkModuleQuery = function (names, options, moduleOptions,
+                                  moduleIsOptional)
+{
   if (names.length === 0) {
     if (moduleIsOptional)
       return;
@@ -32,6 +50,13 @@ program.mkModuleQuery = function (names, options, moduleIsOptional) {
   var regsrc = [], query;
   for (var i=0;i<names.length;i++) {
     var name = names[i];
+    var mopt = {}
+    moduleOptions[name.toLowerCase().replace(/^[^\/]+\/|@.+$/, '')] = mopt;
+    var m = name.match(/@(.+)$/);
+    if (m) {
+      mopt.repoRef = m[1];
+      name = name.substr(0, m.index);
+    }
     regsrc.push('(?:^|\\/)'+name.replace(/([^a-zA-Z0-9_-])/,'\\$1')+'\.js$');
   }
   try {
@@ -71,7 +96,7 @@ program.cmd.search = require('./mode-search');
 program.cmd.install = require('./mode-install');
 program.cmd.activate = require('./mode-activate');
 
+
 program.main(function(){
-  // set GIT_DIR to our basedir
   git.context = this; // execute git callbacks in the program
 })

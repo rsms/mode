@@ -5,28 +5,38 @@ var sys = require('sys'),
 
 function moduleInstaller(self, module, options) {
   // setup some logging
+  var prefix = '> ';
+  if (cli.isColorTerminal)
+    prefix = '\033[1;33m'+prefix+'\033[0;0m';
   if (!options.quiet) {
     module.addListener('will-clean', function(){
-      self.log('  Cleaning '+this);
+      self.log(prefix+'Cleaning '+this);
     }).addListener('will-fetch', function(type){
-      self.log('  '+(type === 'patch' ? 'Updating' : 'Fetching')+
+      self.log(prefix+(type === 'patch' ? 'Updating' : 'Fetching')+
         ' '+this+' from '+this.info.repo);
     }).addListener('will-configure', function(){
-      self.log('  Configuring '+this);
+      if (options.verbose) {
+        var lines = [
+          prefix+'Configuring '+this,
+          'installDir: '+this.installDir,
+          'activePath: '+this.activePath,
+          'repoRef:    '+this.repoRef,
+        ];
+        if (this.wscript)
+          lines.push('wscript:    '+this.wscript);
+        self.log(lines.join('\n  '));
+      }
+      else {
+        self.log(prefix+'Configuring '+this);
+      }
     }).addListener('will-build', function(){
-      self.log('  Building '+this);
+      self.log(prefix+'Building '+this);
     }).addListener('will-activate', function(wasAlreadyActive){
       if (wasAlreadyActive)
-        self.log('  Keeping already active '+this);
+        self.log(prefix+'Keeping already active '+this);
       else
-        self.log('  Activating '+this);
+        self.log(prefix+'Activating '+this);
     });
-    
-    if (options.verbose) {
-      module.addListener('did-configure', function(){
-        self.log('  => '+options.installFiles);
-      })
-    }
   }
   
   return function(closure){
@@ -48,6 +58,12 @@ function moduleInstaller(self, module, options) {
           msg = '\033[1;32m'+msg+'\033[0;0m';
         self.log(msg);
       }
+      if (err && 
+          err.message.indexOf('Another module or version is active') !== -1
+         )
+      {
+        err.message += ' Use the --force flag to activate '+module+' instead.';
+      }
       closure(err);
     });
   }
@@ -67,16 +83,11 @@ exports.options = [
                   'this might give you unexpected results.',
                   {type: 'string', short: 'u', long: 'repo-uri'}],
 
-  ['repoBranch',  'Fetch a specific branch, other than the recommended '+
-                  'default, from the module repository. Only applies to '+
-                  'modules managed by revision control systems like git.',
-                  {type: 'string', short: 'b', long: 'repo-branch'}],
-
-  ['repoRevision','Checkout and use a specific revision (or any refspec for '+
-                  'git repositories). Might need to be used in combination '+
-                  'with --repo-branch depending on repository type and '+
-                  'configuration.',
-                  {type: 'string', short: 'r', long: 'repo-rev'}],
+  ['repoRef',     'Fetch a specific ref (branch, tag or revision), other than '+
+                  'the recommended default, from the module repository. Only '+
+                  'applies to modules managed by revision control systems '+
+                  'like git.',
+                  {type: 'string', short: 'r', long: 'repo-ref'}],
 
   ['installDir',  'Override installation location (Note: this is not the '+
                   '"active" location, but where a module version is '+
@@ -90,7 +101,8 @@ exports.options = [
 ]
 exports.main = function(args, options) {
   var self = this,
-      query = this.mkModuleQuery(args),
+      moduleOptions = {},
+      query = this.mkModuleQuery(args, options, moduleOptions),
       queue = new CallQueue(this, function(err){ if (err) self.exit(err); });
 
   mode.Module.find(query, options, function(err, modules){
@@ -98,7 +110,10 @@ exports.main = function(args, options) {
     //sys.p(modules.map(function(x){return x.id}))
     // todo: resolve module dependencies and queue in order
     modules.forEach(function(module){
-      queue.push(moduleInstaller(self, module, options));
+      var opts = {};
+      process.mixin(opts, self.options, options, 
+        moduleOptions[module.shortId.toLowerCase()]);
+      queue.push(moduleInstaller(self, module, opts));
     });
   });
 }
