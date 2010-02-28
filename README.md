@@ -15,17 +15,15 @@ If you are a developer of a node module, you might be interested in reading the 
 
 This example assumes you have cloned mode and added the `bin` directory to your `PATH`.
 
-    $ mode search crypto
-    math/crypto — OpenSSL based Hashing, Signing and Verifying.
-    $ mode install crypto
-    Installing crypto@master
-      Fetching crypto@master from git://github.com/waveto/node-crypto.git
-      Configuring crypto@master
-      Building crypto@master
-      Activating crypto@master
-    Installed crypto@master
-    $ mode update
-    Already up-to-date.
+    $ mode search sqlite
+    database/sqlite — Bindings for SQLite3.
+    $ mode install sqlite
+    Installing sqlite@master
+    > Fetching sqlite@master from git://github.com/grumdrig/node-sqlite.git
+    > Configuring sqlite@master
+    > Building sqlite@master
+    > Activating sqlite@master
+    Installed sqlite@master
     $
 
 ## Installing
