@@ -46,6 +46,14 @@ Also, add the `mode` program to your `PATH`. One way of doing so would be:
 
 Assuming `~/bin` is a directory and already in `PATH`.
 
+
+## Requirements
+
+- [node](http://nodejs.org/) `>=0.1.30`
+- [git](http://git-scm.com/) `>=1.6`
+
+Yup, that's it.
+
 ## MIT license
 
 Copyright (c) 2010 Rasmus Andersson
