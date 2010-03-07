@@ -2,7 +2,7 @@
 
 have mode &&
 _mode() {
-	local BKCMDS
+	local MODECMDS
 
 	COMPREPLY=()
 	cur=`_get_cword`
