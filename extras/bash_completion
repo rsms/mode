@@ -1,0 +1,18 @@
+# Mode completion adapted from code by Bart Trojanowski <bart@jukie.net>
+
+have mode &&
+_mode() {
+	local BKCMDS
+
+	COMPREPLY=()
+	cur=`_get_cword`
+
+	MODECMDS="$( mode -h 2>&1 | grep -v '^  -' | grep '^  ' | cut -d ' ' -f 3 | xargs echo )"
+
+	COMPREPLY=( $( compgen -W "$MODECMDS" -- "$cur" ) )
+	#_filedir
+
+	return 0
+} &&
+complete -F _mode mode
+
