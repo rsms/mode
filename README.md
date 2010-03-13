@@ -47,7 +47,7 @@ Assuming `~/bin` is a directory and already in `PATH`.
 
 ## Requirements
 
-- [node](http://nodejs.org/) `>=0.1.30`
+- [node](http://nodejs.org/) `>=0.1.31`
 - [git](http://git-scm.com/) `>=1.6`
 
 Yup, that's it.
