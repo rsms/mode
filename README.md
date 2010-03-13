@@ -8,7 +8,7 @@ Mode aims to provide three things:
 - Distribute hosting of modules -- each registered module is individually maintained and developed by it's author(s).
 - Provide a standard index of known modules.
 
-If you are a developer of a node module, you might be interested in reading the [Mode maintainers' guide](http://github.com/rsms/mode/blob/master/doc/maintainers-guide.md).
+If you are a module developer you might be interested in reading the [Mode maintainers' guide](http://github.com/rsms/mode/blob/master/doc/maintainers-guide.md).
 
 
 ## Example use
