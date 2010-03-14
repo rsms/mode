@@ -3,4 +3,4 @@ var path = require('path'),
     fs = require('fs'),
     basedir = path.dirname(path.dirname(fs.realpathSync(__filename)));
 require.paths.unshift(path.join(basedir, 'lib'));
-require('mode/cli').main(basedir);
+require('mode/cli').main();

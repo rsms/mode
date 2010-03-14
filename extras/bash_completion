@@ -2,17 +2,54 @@
 
 have mode &&
 _mode() {
-	local MODECMDS
+  local MODECMDS
+  local cur prev commands options command
+  
+  COMPREPLY=()
+  cur=`_get_cword`
+  commands="$( mode --batch -h 2>&1 | grep -v '^  -' | grep '^  ' | cut -d ' ' -f 3 | xargs echo )"
 
-	COMPREPLY=()
-	cur=`_get_cword`
+  if [[ $COMP_CWORD -eq 1 ]] ; then
+    if [[ "$cur" == -* ]]; then
+      COMPREPLY=( $( compgen -W '--version' -- "$cur" ) )
+    else
+      COMPREPLY=( $( compgen -W "$commands" -- "$cur" ) )
+    fi
+  else
 
-	MODECMDS="$( mode -h 2>&1 | grep -v '^  -' | grep '^  ' | cut -d ' ' -f 3 | xargs echo )"
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+    command=${COMP_WORDS[1]}
 
-	COMPREPLY=( $( compgen -W "$MODECMDS" -- "$cur" ) )
-	#_filedir
+    if [[ "$cur" == -* ]]; then
+      options="$( mode --batch help '$command' 2>&1 | grep '^  -' | sed -E 's/^  (-{1,2}[a-zA-Z0-9_-]+)(:?, (-[a-zA-Z0-9_-]+))(:? <[^>]+>| )(:?  .*|.{0})$/\1 \3/' | xargs echo )"
+      COMPREPLY=( $( compgen -W "$options" -- "$cur" ) )
+    else
+      case $command in
+        @(help|h|\?))
+          COMPREPLY=( $( compgen -W "$commands" -- "$cur" ) )
+          ;;
+        @(search|install))
+          if [ "$cur" != "" ]; then
+            options=$( mode --batch search "$cur" | cut -d ' ' -f 1 | cut -d '/' -f 2 )
+            COMPREPLY=( $( compgen -W "$options" -- "$cur" ) )
+          fi
+          ;;
+        @(upgrade|activate|uninstall))
+          options=$( mode --batch ls installed $cur | cut -d ' ' -f 1 | cut -d '/' -f 2 )
+          COMPREPLY=( $( compgen -W "$options" -- "$cur" ) )
+          ;;
+        @(deactivate))
+          options=$( mode --batch ls active $cur | cut -d ' ' -f 1 | cut -d '/' -f 2 )
+          COMPREPLY=( $( compgen -W "$options" -- "$cur" ) )
+          ;;
+        *)
+          _filedir
+          ;;
+      esac
+    fi
+  fi
 
-	return 0
+  return 0
 } &&
-complete -F _mode mode
+complete -F _mode $filenames mode
 
